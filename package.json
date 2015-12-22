@@ -1,0 +1,24 @@
+{
+  "name": "g-dino",
+  "version": "1.0.0",
+  "description": "Train Google's dinosaur using neural network",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tngan/g-dino.git"
+  },
+  "author": "tngan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tngan/g-dino/issues"
+  },
+  "homepage": "https://github.com/tngan/g-dino#readme",
+  "dependencies": {
+    "express": "^4.13.3",
+    "robotjs": "^0.3.6",
+    "synaptic": "^1.0.2"
+  }
+}

@@ -1,0 +1,453 @@
+/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* Don't use the main frame div when the error is in a subframe. */
+html[subframe] #main-frame-error {
+  display: none;
+}
+
+/* Don't use the subframe error div when the error is in a main frame. */
+html:not([subframe]) #sub-frame-error {
+  display: none;
+}
+
+#diagnose-button {
+  -webkit-margin-start: 0;
+  float: none;
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+
+h1 {
+  margin-top: 0;
+}
+
+h2 {
+  color: #666;
+  font-size: 1.2em;
+  font-weight: normal;
+  margin: 10px 0;
+}
+
+a {
+  color: rgb(17, 85, 204);
+  text-decoration: none;
+}
+
+.icon {
+  -webkit-user-select: none;
+  display: inline-block;
+}
+
+.icon-generic {
+  /**
+   * Can't access chrome://theme/IDR_ERROR_NETWORK_GENERIC from an untrusted
+   * renderer process, so embed the resource manually.
+   */
+  content: -webkit-image-set(
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABIAQMAAABvIyEEAAAABlBMVEUAAABTU1OoaSf/AAAAAXRSTlMAQObYZgAAAENJREFUeF7tzbEJACEQRNGBLeAasBCza2lLEGx0CxFGG9hBMDDxRy/72O9FMnIFapGylsu1fgoBdkXfUHLrQgdfrlJN1BdYBjQQm3UAAAAASUVORK5CYII=) 1x,
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJAAAACQAQMAAADdiHD7AAAABlBMVEUAAABTU1OoaSf/AAAAAXRSTlMAQObYZgAAAFJJREFUeF7t0cENgDAMQ9FwYgxG6WjpaIzCCAxQxVggFuDiCvlLOeRdHR9yzjncHVoq3npu+wQUrUuJHylSTmBaespJyJQoObUeyxDQb3bEm5Au81c0pSCD8HYAAAAASUVORK5CYII=) 2x);
+}
+
+.icon-offline {
+  content: -webkit-image-set(
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABIAQMAAABvIyEEAAAABlBMVEUAAABTU1OoaSf/AAAAAXRSTlMAQObYZgAAAGxJREFUeF7tyMEJwkAQRuFf5ipMKxYQiJ3Z2nSwrWwBA0+DQZcdxEOueaePp9+dQZFB7GpUcURSVU66yVNFj6LFICatThZB6r/ko/pbRpUgilY0Cbw5sNmb9txGXUKyuH7eV25x39DtJXUNPQGJtWFV+BT/QAAAAABJRU5ErkJggg==) 1x,
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJAAAACQBAMAAAAVaP+LAAAAGFBMVEUAAABTU1NNTU1TU1NPT09SUlJSUlJTU1O8B7DEAAAAB3RSTlMAoArVKvVgBuEdKgAAAJ1JREFUeF7t1TEOwyAMQNG0Q6/UE+RMXD9d/tC6womIFSL9P+MnAYOXeTIzMzMzMzMzaz8J9Ri6HoITmuHXhISE8nEh9yxDh55aCEUoTGbbQwjqHwIkRAEiIaG0+0AA9VBMaE89Rogeoww936MQrWdBr4GN/z0IAdQ6nQ/FIpRXDwHcA+JIJcQowQAlFUA0MfQpXLlVQfkzR4igS6ENjknm/wiaGhsAAAAASUVORK5CYII=) 2x);
+  position: relative;
+}
+
+.icon-disabled {
+  content: -webkit-image-set(
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAABICAMAAAAZF4G5AAAABlBMVEVMaXFTU1OXUj8tAAAAAXRSTlMAQObYZgAAASZJREFUeAHd11Fq7jAMRGGf/W/6PoWB67YMqv5DybwG/CFjRuR8JBw3+ByiRjgV9W/TJ31P0tBfC6+cj1haUFXKHmVJo5wP98WwQ0ZCbfUc6LQ6VuUBz31ikADkLMkDrfUC4rR6QGW+gF6rx7NaHWCj1Y/W6lf4L7utvgBSt3rBFSS/XBMPUILcJINHCBWYUfpWn4NBi1ZfudIc3rf6/NGEvEA+AsYTJozmXemjXeLZAov+mnkN2HfzXpMSVQDnGw++57qNJ4D1xitA2sJ+VAWMygSEaYf2mYPTjZfk2K8wmP7HLIH5Mg4/pP+PEcDzUvDMvYbs/2NWwPO5vBdMZE4EE5UTQLiBFDaUlTDPBRoJ9HdAYIkIo06og3BNXtCzy7zA1aXk5x+tJARq63eAygAAAABJRU5ErkJggg==) 1x,
+      url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOAAAACQAQMAAAArwfVjAAAABlBMVEVMaXFTU1OXUj8tAAAAAXRSTlMAQObYZgAAAYdJREFUeF7F1EFqwzAUBNARAmVj0FZe5QoBH6BX+dn4GlY2PYNzGx/A0CvkCIJuvIraKJKbgBvzf2g62weDGD7CYggpfFReis4J0ey9EGFIiEQQojFSlA9kSIiqd0KkFjKsewgRbStEN19mxUPTtmW9HQ/h6tyqNQ8NlSMZdzyE6qkoE0trVYGFm0n1WYeBhduzwbwBC7voS+vIxfeMjeaiLxsMMtQNwMPtuew+DjzcTHk8YMfDknEcIUOtf2lVfgVH3K4Xv5PRYAXRVMtItIJ3rfaCIVn9DsTH2NxisAVRex2Hh3hX+/mRUR08bAwPEYsI51ZxWH4Q0SpicQRXeyEaIug48FEdegARfMz/tADVsRciwTAxW308ehmC2gLraC+YCbV3QoTZexa+zegAEW5PhhgYfmbvJgcRqngGByOSXdFJcLk2JeDPEN0kxe1JhIt5FiFA+w+ItMELsUyPF2IaJ4aILqb4FbxPwhImwj6JauKgDUCYaxmYIsd4KXdMjIC9ItB5Bn4BNRwsG0XM2nwAAAAASUVORK5CYII=) 2x);
+  width: 112px;
+}
+
+.error-code {
+  display: block;
+}
+
+#content-top {
+  margin: 20px;
+}
+
+#help-box-inner {
+  background-color: #f9f9f9;
+  border-top: 1px solid #EEE;
+  color: #444;
+  padding: 20px;
+  text-align: start;
+}
+
+.hidden {
+  display: none;
+}
+
+#suggestion {
+  margin-top: 15px;
+}
+
+#short-suggestion {
+  margin-top: 5px;
+}
+
+#sub-frame-error-details {
+  color: #8F8F8F;
+/* Not done on mobile for performance reasons. */
+  text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+}
+
+[jscontent=failedUrl] {
+  overflow-wrap: break-word;
+}
+
+#search-container {
+  /* Prevents a space between controls. */
+  display: flex;
+  margin-top: 20px;
+}
+
+#search-box {
+  border: 1px solid #cdcdcd;
+  flex-grow: 1;
+  font-size: 16px;
+  height: 26px;
+  margin-right: 0;
+  padding: 1px 9px;
+}
+
+#search-box:focus {
+  border: 1px solid rgb(93, 154, 255);
+  outline: none;
+}
+
+#search-button {
+  border: none;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+  box-shadow: none;
+  display: flex;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  width: 60px;
+}
+
+#search-image {
+  content:
+      -webkit-image-set(
+          url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAPCAQAAAB+HTb/AAAArElEQVR4Xn3NsUoCUBzG0XvB3U0chR4geo5qihpt6gkCx0bXFsMERWj2KWqIanAvmlUUoQapwU6g4l8H5bd9Z/iSPS0hu/RqZqrncBuzLl7U3Rn4cSpQFTeroejJl1Lgs7f4ceDPdeBMXYp86gaONYJkY83AnqHiGk9wHnjk16PKgo5N9BUCkzPf5j6M0PfuVg5MymoetFwoaKAlB26WdXAvJ7u5mezitqtkT//7Sv/u96CaLQAAAABJRU5ErkJggg==) 1x,
+          url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAeCAQAAACVzLYUAAABYElEQVR4Xr3VMUuVURzH8XO98jgkGikENkRD0KRGDUVDQy0h2SiC4IuIiktL4AvQt1CDBJUJwo1KXXS6cWdHw7tcjWwoC5Hrx+UZgnNO5CXiO/75jD/+QZf9MzjskVU7DrU1zRv9G9ir5hsA4Nii83+GA9ZI1nI1D6tWAE1TRlQMuuuFDthzMQefgo4nKr+f3dIGDdUUHPYD1ISoMQdgJgUfgqaKEOcxWE/BVTArJBvwC0cGY7gNLgiZNsD1GP4EPVn4EtyLYRuczcJ34HYMP4E7GdajDS7FcB48z8AJ8FmI4TjouBkzZ2yBuRQMlsButIZ+dfDVUBqOaIHvavpLVHXfFmAqv45r9gEHNr3y3hcAfLSgSMPgiiZR+6Z9AMuKNAwqpjUcA2h55pxgAfBWkYRlQ254YMJloaxPHbCkiGCymL5RlLA7GnRDXyuC7uhicLoKdRyaDE5Pl00K//93nABqPgBDK8sfWgAAAABJRU5ErkJggg==) 2x);
+  margin: auto;
+}
+
+.secondary-button {
+  -webkit-margin-end: 16px;
+  background: #d9d9d9;
+  color: #696969;
+}
+
+.snackbar {
+  background: #323232;
+  border-radius: 2px;
+  bottom: 24px;
+  box-sizing: border-box;
+  color: #fff;
+  font-size: .87em;
+  left: 24px;
+  max-width: 568px;
+  min-width: 288px;
+  opacity: 0;
+  padding: 16px 24px 12px;
+  position: fixed;
+  transform: translateY(90px);
+  will-change: opacity, transform;
+  z-index: 999;
+}
+
+.snackbar-show {
+  -webkit-animation:
+    show-snackbar .25s cubic-bezier(0.0, 0.0, 0.2, 1) forwards,
+    hide-snackbar .25s cubic-bezier(0.4, 0.0, 1, 1) forwards 5s;
+}
+
+@-webkit-keyframes show-snackbar {
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@-webkit-keyframes hide-snackbar {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(90px);
+  }
+}
+
+.suggestions {
+  margin-top: 18px;
+}
+
+.suggestion-header {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.suggestion-body {
+  color: #777;
+}
+
+/* Increase line height at higher resolutions. */
+@media (min-width: 641px) and (min-height: 641px) {
+  #help-box-inner {
+    line-height: 18px;
+  }
+}
+
+/* Decrease padding at low sizes. */
+@media (max-width: 640px), (max-height: 640px) {
+  h1 {
+    margin: 0 0 15px;
+  }
+  #content-top {
+    margin: 15px;
+  }
+  #help-box-inner {
+    padding: 20px;
+  }
+  .suggestions {
+    margin-top: 10px;
+  }
+  .suggestion-header {
+    margin-bottom: 0;
+  }
+  .error-code {
+    margin: 10px 0;
+  }
+}
+
+/* Don't allow overflow when in a subframe. */
+html[subframe] body {
+  overflow: hidden;
+}
+
+#sub-frame-error {
+  -webkit-align-items: center;
+  background-color: #DDD;
+  display: -webkit-flex;
+  -webkit-flex-flow: column;
+  height: 100%;
+  -webkit-justify-content: center;
+  left: 0;
+  position: absolute;
+  top: 0;
+  transition: background-color .2s ease-in-out;
+  width: 100%;
+}
+
+#sub-frame-error:hover {
+  background-color: #EEE;
+}
+
+#sub-frame-error .icon-generic {
+  margin: 0 0 16px;
+}
+
+#sub-frame-error-details {
+  margin: 0 10px;
+  text-align: center;
+  visibility: hidden;
+}
+
+/* Show details only when hovering. */
+#sub-frame-error:hover #sub-frame-error-details {
+  visibility: visible;
+}
+
+/* If the iframe is too small, always hide the error code. */
+/* TODO(mmenke): See if overflow: no-display works better, once supported. */
+@media (max-width: 200px), (max-height: 95px) {
+  #sub-frame-error-details {
+    display: none;
+  }
+}
+
+/* Adjust icon for small embedded frames in apps. */
+@media (max-height: 100px) {
+  #sub-frame-error .icon-generic {
+    height: auto;
+    margin: 0;
+    padding-top: 0;
+    width: 25px;
+  }
+}
+
+/* details-button is special; it's a <button> element that looks like a link. */
+#details-button {
+  box-shadow: none;
+  min-width: 0;
+}
+
+/* Styles for platform dependent separation of controls and details button. */
+.suggested-left > #control-buttons,
+.suggested-left #stale-load-button,
+.suggested-right > #details-button {
+  float: left;
+}
+
+.suggested-right > #control-buttons,
+.suggested-right #stale-load-button,
+.suggested-left > #details-button {
+  float: right;
+}
+
+.suggested-left .secondary-button {
+  -webkit-margin-end: 0px;
+  -webkit-margin-start: 16px;
+}
+
+#details-button.singular {
+  float: none;
+}
+
+#buttons::after {
+  clear: both;
+  content: '';
+  display: block;
+  width: 100%;
+}
+
+/* Offline page */
+.offline .interstitial-wrapper {
+  color: #2b2b2b;
+  font-size: 1em;
+  line-height: 1.55;
+  margin: 0 auto;
+  max-width: 600px;
+  padding-top: 100px;
+  width: 100%;
+}
+
+.offline .runner-container {
+  height: 150px;
+  max-width: 600px;
+  overflow: hidden;
+  position: absolute;
+  top: 35px;
+  width: 44px;
+}
+
+.offline .runner-canvas {
+  height: 150px;
+  max-width: 600px;
+  opacity: 1;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  z-index: 2;
+}
+
+.offline .controller {
+  background: rgba(247,247,247, .1);
+  height: 100vh;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  z-index: 1;
+}
+
+#offline-resources {
+  display: none;
+}
+
+@media (max-width: 420px) {
+  .suggested-left > #control-buttons,
+  .suggested-right > #control-buttons {
+    float: none;
+  }
+
+  .snackbar {
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    border-radius: 0;
+  }
+}
+
+@media (max-height: 350px) {
+  h1 {
+    margin: 0 0 15px;
+  }
+
+  .icon-offline {
+    margin: 0 0 10px;
+  }
+
+  .interstitial-wrapper {
+    margin-top: 5%;
+  }
+
+  .nav-wrapper {
+    margin-top: 30px;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 736px) and (orientation: landscape) {
+  .offline .interstitial-wrapper {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+@media (min-width: 420px) and (max-width: 736px) and
+       (min-height: 240px) and (max-height: 420px) and
+       (orientation:landscape) {
+  .interstitial-wrapper {
+    margin-bottom: 100px;
+  }
+}
+
+@media (min-height: 240px) and (orientation: landscape) {
+  .offline .interstitial-wrapper {
+    margin-bottom: 90px;
+  }
+
+  .icon-offline {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-height: 320px) and (orientation: landscape) {
+  .icon-offline {
+    margin-bottom: 0;
+  }
+
+  .offline .runner-container {
+    top: 10px;
+  }
+}
+
+@media (max-width: 240px) {
+  button {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .interstitial-wrapper {
+    overflow: inherit;
+    padding: 0 8px;
+  }
+}
+
+@media (max-width: 120px) {
+  button {
+    width: auto;
+  }
+}
