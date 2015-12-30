@@ -51,3 +51,5 @@ Finally the neural network is using 40 inputs, a hidden layer with 20 nodes and 
 - [João Pedro](https://github.com/joaopedrovbs)
 
 They are the first team to implement this idea. [Here](https://github.com/ivanseidel/IAMDinosaur) is their repository.
+
+- [Juan Cazala](https://github.com/cazala) **Creator of synaptic.js**
