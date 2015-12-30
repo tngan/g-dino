@@ -1,5 +1,4 @@
 // Simple HTTP server to take care your dino
-
 'use strict';
 
 const fs = require("fs");
@@ -17,6 +16,14 @@ http.createServer((req, res) => {
         context = "public/javascripts/runner.js";
     } else if (pathname === "/loadtime.js") {
         context = "public/javascripts/loadtime.js";
+    } else if (pathname === "/synaptic.min.js") {
+        context = "public/javascripts/synaptic.min.js";
+    } else if (pathname === "/motor.js") {
+        context = "public/javascripts/system/motor.js";
+    } else if (pathname === "/visual.js") {
+        context = "public/javascripts/system/visual.js";
+    } else if (pathname === "/brain.js") {
+        context = "public/javascripts/system/brain.js";
     } else if (pathname === "/base.css") {
         context = "public/stylesheets/base.css";
     } else if (pathname === "/dino.css") {

@@ -14,9 +14,9 @@
   <div id="main-frame-error" class="interstitial-wrapper" jstcache="0">
     <div id="main-content" jstcache="0">
       <div class="icon icon-offline" jseval="updateIconClass(this.classList, iconClass)" jstcache="3" style="visibility: hidden;"></div>
-      <div id="main-message" jstcache="0">
+      <div id="main-message-g-dino" jstcache="0">
         <h1 i18n-content="heading" jstcache="0">Train your dino to be the smartest dino over the world</h1>
-        <p jstcache="0">Dino is born because your computer isn’t connected to the Internet.</p>
+        <p>Dino is born because your computer isn’t connected to the Internet.</p>
         <div class="error-code" jscontent="errorCode" jstcache="9">BIRTH_DINO</div>
         <div id="dino-vision" style="width: 200px; height: 50px;"></div>
       </div>
@@ -73,7 +73,7 @@
   </div>
   <script type="text/javascript">
     if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1) {
-      var __runner = new Runner('.interstitial-wrapper');
+      var _sys = new Runner('.interstitial-wrapper');
     } else {
       document.getElementById("main-frame-notchrome").style.display="";
   }
@@ -84,21 +84,7 @@
     }
   </script>
   <script type="text/javascript">
-    var canvas = document.getElementsByClassName('runner-canvas')[1];
-    var context = canvas.getContext("2d");
-    var vision = document.getElementById('dino-vision');
-    function pick(event) {
-      var x = event.layerX;
-      var y = event.layerY;
-      var pixel = context.getImageData(x, y, 1, 1);
-      var data = pixel.data;
-      var rgba = 'rgba(' + data[0] + ',' + data[1] +
-                 ',' + data[2] + ',' + data[3] + ')';
-      vision.style.background =  rgba;
-      vision.textContent = rgba;
-    }
-    canvas.addEventListener('mousemove', pick);
-  </script>
+     </script>
   <script type="text/javascript">
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
@@ -292,16 +278,18 @@ function onDocumentLoad() {
       secondaryButton.classList.add('secondary-button');
     }
   }
-
+  /*
   // Add a main message paragraph.
   if (loadTimeData.valueExists('primaryParagraph')) {
     var p = document.querySelector('#main-message p');
     p.innerHTML = loadTimeData.getString('primaryParagraph');
     p.hidden = false;
   }
+  */
 }
 
 document.addEventListener('DOMContentLoaded', onDocumentLoad);
   </script>
+  <script type="text/javascript" src="motor.js"></script>
 </body>
 </html>
