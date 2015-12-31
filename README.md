@@ -1,5 +1,5 @@
 # g-dino
-Train Google's dinosaur using neural network
+Train Google's dinosaur using neural network in browser.
 
 ## FAQ 
 
@@ -7,7 +7,7 @@ Train Google's dinosaur using neural network
 I wish the little dino to get smarter one day.
 
 **Will the little dino grow up as a dinasour ?**<br/>
-The answer is NO. He finally learns when to duck, jump and walk only.
+The answer is NO. It finally learns when to duck, jump and walk only.
 
 **How can I train my dino ?**<br/>
 Follow the installation guide, play the game as usual.
@@ -18,38 +18,44 @@ Follow the installation guide, play the game as usual.
 1. Make sure you have already installed Node.js (version >= 4.0.0).
 1. Run the command `node app.js`.
 1. Open Chrome, and your little dino will be appeared in localhost:3000.
-1. His brain will send out a signal to tell you when to duck, jump and walk.
+1. Its brain will send out a signal to tell you when to duck, jump and walk.
 
 ## Description
 
 We are using simple neural network to train the dino, to reduce the latency of the game, three workers are used to build the neural system of dino. They are respectively motor, visual and brain. You can find the scripts under the folder `/public/javascripts/systems`.
 
-**Motor** is responsible for receiving the signal from dino's brain in order to do corresponding reaction (e.g. duck, jump, walk) and input the signal of dino's vision to the visual system.
+**Motor** is responsible for receiving signals from the brain in order to take reactions (e.g. duck, jump and walk) and sending the vision signals to the visual system.
 
-**Visual** is responsible for receiving the signal from dino's motor system in order to translate into brain-known signal and then input it to the brain.
+**Visual** is responsible for translating vision signals from the motor system into brain-known signals and sending to the brain.
 
-**Brain** is responsible for receiving the visual signal in order to train itself and output the corresponding motor signal back to its motor system.
+**Brain** is responsible for receiving signals from visual system in order to do behaviour training, sending feedback signals to the motor system.
 
-Currently, the dino has 200 pixels vision range, the visual signal is an 1-D vector consists of 40 values. Each value is computed by the norm of a 1x91 vector which contains the information of color of pixels. The only color of each component in the game is #535353, therefore, we can easily retrieve a vector with 0 and 1, then we can compute its norm.
+Currently, the dino has 200 * 91 pixels visual range and the sampling width is 50 pixels. The visual signal is fetched every half second which is the reaction time of dino. It is an 1-D vector which is composed of 40 values. Each value is computed by the norm of a 1x91 vector which contains the color of pixels. The color of each component in the game is #535353 (except the cloud and high score banner), therefore we can easily retrieve a vector with 0 and 1, then its norm is computed.
 
 ![g-dino](https://raw.githubusercontent.com/tngan/g-dino/master/public/wiki/vision.png)
 
-Finally the neural network is using 40 inputs, a hidden layer with 20 nodes and an output with 3 nodes indicating the corresponding reaction. Dino's brain determines which output node has the highest rank. 
+The structure of neural network is as follow:
 
-## What's the next ?
++ **Input layer** with 40 nodes (norm of forty 1x91 vector)
++ **Single hidden layer** with 20 nodes
++ **Output layer** with 3 nodes (duck, jump and walk)
 
-+ The little dino should learn itself instead of manual training.
+## Growth plan for the little dino 
+
++ Build APIs for user-defined learning algorithms to work together with the three system workers.
++ Dashboard will be made for monitoring the dino and customizing the network.
++ The little dino should learn from itself instead of manual training.
++ Performance optimization (Browser training isn't a good choice even worker is used, but it's a challenging task).
 + Export and import the trained network in JSON format. (See [here](https://github.com/cazala/synaptic/wiki/Networks#tojsonfromjson))
-+ A dashboard will be made to monitor the dino.
-+ Customize the configurations (especially the visual range of the dino).
-+ Google's dino game has a great API, it's worth to investigate it later on.
-+ Improve performance.
++ Introduce one more output which is high jumping. (Long press the jump button)
++ Google actually provides a great API for the dino, it's worth to investigate it later on.
++ The little dino may favor Google's TensorFlow. The alias **tensor-rex** is reversed.
 
 ## Credits
 
 - [Ivan Seidel](https://github.com/ivanseidel)
 - [João Pedro](https://github.com/joaopedrovbs)
 
-They are the first team to implement this idea. [Here](https://github.com/ivanseidel/IAMDinosaur) is their repository.
+They are the first team to implement this idea. See [IAMDinosaur](https://github.com/ivanseidel/IAMDinosaur). 
 
 - [Juan Cazala](https://github.com/cazala) **Creator of synaptic.js**
