@@ -8,7 +8,7 @@ const url = require("url");
 http.createServer((req, res) => {
     
     const pathname = url.parse(req.url).pathname;
-    console.log(`Request for ${pathname} received.`);
+    console.log('Request for ${pathname} received.');
     let context = "404.html";
     if(pathname === "/") {
         context = "index.html";
